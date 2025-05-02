@@ -1,0 +1,5 @@
+canvas {
+    border: 10px solid #ffb6c1;
+    background-image: url("background.png");
+    background-size: auto 350px;
+}
