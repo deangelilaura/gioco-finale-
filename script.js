@@ -1,7 +1,8 @@
 function startGame() {
     myGamePiece.loadImages(running);
-    bushObject.loadImages();
-    crateObject.loadImages();
+    car1Object.loadImages();
+    car2Object.loadImages();
+    car7Object.loadImages();
     myGameArea.start();
 }
 
@@ -22,10 +23,11 @@ var myGamePiece = {
         this.tryY = this.y + this.speedY;
         this.tryX = this.x + this.speedX;
     
-        const collidesWithBush = this.crashWith(bushObject);
-        const collidesWithCrate = this.crashWith(crateObject);
+        const collidesWithCar7 = this.crashWith(car7Object);
+        const collidesWithCar1 = this.crashWith(car1Object);
+        const collideWithCar2 = this.crashWith(car2Object);
     
-        if (!collidesWithBush && !collidesWithCrate) {
+        if (!collidesWithCar7 && !collidesWithCar1) {
             // Controlla bordi canvas
             if (this.tryX < 0) this.tryX = 0;
             if (this.tryX + this.width > myGameArea.canvas.width)
@@ -104,28 +106,41 @@ var myGameArea = {
         );
     }
 };
-var bushObject = {
-    width: 100,
+var car7Object = {
+    width: 80,
     height: 50,
     x: 100,
-    y: 270 - 50,
+    y: 270 - 41,
     image : null,
     loadImages: function() {
         
       this.image = new Image(this.width, this.height);
-      this.image.src = "https://i.ibb.co/CPdHYdB/Bush-1.png";
+      this.image.src = "/immagini/car7.png";
     }
   };
 
-var crateObject = {
-    width: 100,
-    height: 100,
+var car2Object = {
+    width: 80,
+    height: 50,
+    x: 300,
+    y: 270 - 66,
+    image: null,
+    loadImages: function() {
+
+        this.image = new Image(this.width, this.height);
+        this.image.src = "/immagini/car2.png";
+    }
+};
+
+var car1Object = {
+    width: 80,
+    height: 50,
     x: 200,
-    y: 270 - 100,
+    y: 270 - 94,
   
     loadImages: function() {
       this.image = new Image(this.width, this.height);
-      this.image.src = "https://i.ibb.co/GMgf32L/Crate.png";
+      this.image.src = "/immagini/car1.png";
     }
   };
 var running = ['spirite/Run1.png', 'spirite/Run2.png', 'spirite/Run3.png']; // Example paths for images
@@ -134,8 +149,9 @@ function updateGameArea() {
     myGameArea.clear();
     myGamePiece.update();
     myGameArea.drawGameObject(myGamePiece);
-    myGameArea.drawGameObject(bushObject);
-    myGameArea.drawGameObject(crateObject);
+    myGameArea.drawGameObject(car7Object);
+    myGameArea.drawGameObject(car1Object);
+    myGameArea.drawGameObject(car2Object);
 }
 
 // Control functions
