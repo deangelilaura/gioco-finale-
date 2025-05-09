@@ -2,14 +2,16 @@ function startGame() {
     myGamePiece.loadImages(running);
     car1Object.loadImages();
     car2Object.loadImages();
+    car3Object.loadImages();
     car7Object.loadImages();
+    car10Object.loadImages();
     myGameArea.start();
 }
 
 var myGamePiece = {
     speedX: 0,
     speedY: 0,
-    width: 70,
+    width: 50,
     height: 70,
     x: 370,
     y: 320,
@@ -26,6 +28,8 @@ var myGamePiece = {
         const collidesWithCar7 = this.crashWith(car7Object);
         const collidesWithCar1 = this.crashWith(car1Object);
         const collideWithCar2 = this.crashWith(car2Object);
+        const collideWithCar3 = this.crashWith(car3Object);
+        const collideWithCar10 = this.crashWith(car10Object);
     
         if (!collidesWithCar7 && !collidesWithCar1) {
             // Controlla bordi canvas
@@ -143,6 +147,30 @@ var car1Object = {
       this.image.src = "/immagini/car1.png";
     }
   };
+
+var car3Object = {
+    width: 80,
+    height: 50,
+    x: 400,
+    y: 270 - 13,
+
+    loadImages: function() {
+        this.image = new Image(this.width, this.height);
+        this.image.src = "/immagini/car3.png"
+    }
+};
+
+var car10Object = {
+    width: 80,
+    height: 50,
+    x: 500,
+    y: 270 - -15,
+
+    loadImages: function() {
+        this.image = new Image(this.width, this.height);
+        this.image.src = "/immagini/car10.png"
+    }
+};
 var running = ['spirite/Run1.png', 'spirite/Run2.png', 'spirite/Run3.png']; // Example paths for images
 
 function updateGameArea() {
@@ -152,6 +180,8 @@ function updateGameArea() {
     myGameArea.drawGameObject(car7Object);
     myGameArea.drawGameObject(car1Object);
     myGameArea.drawGameObject(car2Object);
+    myGameArea.drawGameObject(car3Object);
+    myGameArea.drawGameObject(car10Object);
 }
 
 // Control functions
