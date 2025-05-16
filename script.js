@@ -15,9 +15,14 @@
             update: function() {
                 this.tryY = this.y + this.speedY;
                 this.tryX = this.x + this.speedX;
-            
-                // Se il gioco è terminato, non aggiornare la posizione
-                if (gameOver) {
+
+                if (gameOver) return;
+
+                // Se la rana arriva in cima (puoi cambiare 10 con la soglia che preferisci)
+                if (this.tryY < 10) {
+                    this.speedX = 0;
+                    this.speedY = 0;
+                    showWin();
                     return;
                 }
             
@@ -286,6 +291,15 @@
             myGamePiece.speedX = 0;
             myGamePiece.speedY = 0;
         }
+        function showWin() {
+            gameOver = true;
+            document.getElementById('win-message').style.display = 'flex';
+        }
+
+        function restartGame() {
+            document.getElementById('win-message').style.display = 'none';
+            respawn();
+        }
 
         function updateGameArea() {
             myGameArea.clear();
@@ -325,3 +339,51 @@
             myGamePiece.speedX = 0;
             myGamePiece.speedY = 0;
         }
+
+// Gestione pressione tasti per movimento
+document.addEventListener('keydown', function(event) {
+    if (gameOver) return;
+    switch(event.key) {
+        case 'ArrowUp':
+        case 'w':
+        case 'W':
+            moveup();
+            break;
+        case 'ArrowDown':
+        case 's':
+        case 'S':
+            movedown();
+            break;
+        case 'ArrowLeft':
+        case 'a':
+        case 'A':
+            moveleft();
+            break;
+        case 'ArrowRight':
+        case 'd':
+        case 'D':
+            moveright();
+            break;
+    }
+});
+
+// Ferma il movimento quando il tasto viene rilasciato
+document.addEventListener('keyup', function(event) {
+    switch(event.key) {
+        case 'ArrowUp':
+        case 'w':
+        case 'W':
+        case 'ArrowDown':
+        case 's':
+        case 'S':
+        case 'ArrowLeft':
+        case 'a':
+        case 'A':
+        case 'ArrowRight':
+        case 'd':
+        case 'D':
+            clearmove();
+            break;
+    }
+});
+ 

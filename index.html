@@ -7,16 +7,7 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body onload="startGame()">
-    <div id="game-container">
-        <div class="controls">
-            <button onmousedown="moveup()" onmouseup="clearmove()" ontouchstart="moveup()">↑</button><br>
-            <button onmousedown="moveleft()" onmouseup="clearmove()" ontouchstart="moveleft()">←</button>
-            <button onmousedown="movedown()" onmouseup="clearmove()" ontouchstart="movedown()">↓</button>
-            <button onmousedown="moveright()" onmouseup="clearmove()" ontouchstart="moveright()">→</button>
-        </div>
-    </div>
-    
-    <!-- Game Over overlay -->
+     <!-- Game Over overlay -->
     <div id="game-over">
         <div class="game-over-content">
             <h1>Game Over!</h1>
@@ -24,7 +15,9 @@
             <button class="respawn-btn" onclick="respawn()">Respawn</button>
         </div>
     </div>
-
+    <div id="win-message" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); color:white; align-items:center; justify-content:center; flex-direction:column; z-index:1000;">
+    <h1>Hai vinto!</h1>
+    <button onclick="restartGame()">Ricomincia</button>
+</div>
 </body>
-
 </html>

@@ -13,25 +13,6 @@ body {
             background-color: #222;
         }
         
-        .controls {
-            margin-top: 20px;
-            text-align: center;
-        }
-        
-        button {
-            padding: 10px 15px;
-            margin: 5px;
-            background-color: #444;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        
-        button:hover {
-            background-color: #666;
-        }
-        
         #game-over {
             position: fixed;
             top: 0;
