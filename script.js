@@ -1,6 +1,4 @@
  var myGamePiece = {
-            speedX: 0,
-            speedY: 0,
             width: 50,
             height: 70,
             x: 370,
@@ -11,57 +9,51 @@
             tryX: 0,
             tryY: 0,
             contaFrame: 0,
+       update: function() {
+                    if (gameOver) return;
 
-            update: function() {
-                this.tryY = this.y + this.speedY;
-                this.tryX = this.x + this.speedX;
-
-                if (gameOver) return;
-
-                // Se la rana arriva in cima (puoi cambiare 10 con la soglia che preferisci)
-                if (this.tryY < 10) {
-                    this.speedX = 0;
-                    this.speedY = 0;
-                    showWin();
-                    return;
-                }
-            
-                // Controlla le collisioni con tutte le auto attive
-                let collision = false;
-                for (let car of activeCars) {
-                    if (this.crashWith(car)) {
-                        collision = true;
-                        // Ferma il movimento quando c'è una collisione
-                        this.speedX = 0;
-                        this.speedY = 0;
-                        // Mostra schermata game over
-                        showGameOver();
-                        break;
+                    // Se la rana arriva in cima (puoi cambiare 10 con la soglia che preferisci)
+                    if (this.y < 10) {
+                        showWin();
+                        return;
                     }
-                }
-            
-                if (!collision) {
-                    // Controlla bordi canvas
-                    if (this.tryX < 0) this.tryX = 0;
-                    if (this.tryX + this.width > myGameArea.canvas.width)
-                        this.tryX = myGameArea.canvas.width - this.width;
-                    if (this.tryY < 0) this.tryY = 0;
-                    if (this.tryY + this.height > myGameArea.canvas.height)
-                        this.tryY = myGameArea.canvas.height - this.height;
-            
-                    // Solo se non c'è collisione
-                    this.x = this.tryX;
-                    this.y = this.tryY;
-                }
-            
-                this.contaFrame++;
-                if (this.contaFrame == 50) {
-                    this.contaFrame = 0;
-                    this.actualFrame = (this.actualFrame + 1) % this.imageList.length;
-                    this.image = this.imageList[this.actualFrame];
-                }
-            },            
 
+                    // Controlla le collisioni con tutte le auto attive
+                    let collision = false;
+                    for (let car of activeCars) {
+                        if (this.crashWith(car)) {
+                            collision = true;
+                            showGameOver();
+                            break;
+                        }
+                    }
+
+                    this.contaFrame++;
+                    if (this.contaFrame == 50) {
+                        this.contaFrame = 0;
+                        this.actualFrame = (this.actualFrame + 1) % this.imageList.length;
+                        this.image = this.imageList[this.actualFrame];
+                    }
+                },
+                crashWith: function(otherobj) {
+                    var myleft = this.x;
+                    var myright = this.x + this.width;
+                    var mytop = this.y;
+                    var mybottom = this.y + this.height;
+                    var otherleft = otherobj.x;
+                    var otherright = otherobj.x + otherobj.width;
+                    var othertop = otherobj.y;
+                    var otherbottom = otherobj.y + otherobj.height;
+
+                    if ((mybottom >= othertop) &&
+                        (mytop <= otherbottom) &&
+                        (myright >= otherleft) &&
+                        (myleft <= otherright)) {
+                        return true; // Collisione
+                    }
+
+                    return false; // Nessuna collisione
+                },
             loadImages: function(running) {
                 for (let imgPath of running) {
                     var img = new Image();
@@ -91,7 +83,7 @@
                 return false; // Nessuna collisione
             }
         };
-
+        const BLOCK_SIZE = 40
         var myGameArea = {
             canvas: document.createElement("canvas"),
             context: null,
@@ -227,56 +219,81 @@
         var gameOver = false;
         var carIntervals = [];
 
-        function startGame() {
-            gameOver = false;
-            activeCars = [];
-            
-            // Nascondi la schermata di game over se visibile
-            document.getElementById('game-over').style.display = 'none';
-            
-            myGamePiece.loadImages(running);
-            myGameArea.start();
-            
-            // Cancella eventuali intervalli precedenti
-            for (let interval of carIntervals) {
-                clearInterval(interval);
-            }
-            carIntervals = [];
-            
-            // Crea le prime macchine e imposta gli intervalli per le nuove macchine
-            carLanes.forEach(lane => {
-                // Crea la prima macchina
-                activeCars.push(new Car(lane));
-                
-                // Crea nuove macchine ad intervalli
-                const intervalId = setInterval(() => {
-                    // Limita il numero di macchine per corsia
-                    const carsInLane = activeCars.filter(car => car.y === lane.y).length;
-                    
-                    if (carsInLane < 3) { // Massimo 3 macchine per corsia
-                        activeCars.push(new Car(lane));
-                    }
-                    
-                    // Limita il numero totale di macchine attive
-                    if (activeCars.length > 50) {
-                        // Rimuovi la macchina più vecchia che non è visibile
-                        const indexToRemove = activeCars.findIndex(car => 
-                            (car.direction === 'right' && car.x < -car.width) || 
-                            (car.direction === 'left' && car.x > myGameArea.canvas.width)
-                        );
-                        
-                        if (indexToRemove !== -1) {
-                            activeCars.splice(indexToRemove, 1);
-                        } else {
-                            activeCars.shift();  // Rimuovi la macchina più vecchia
+       
+    function startGame() {
+        gameOver = false;
+        activeCars = [];
+        document.getElementById('game-over').style.display = 'none';
+        myGamePiece.loadImages(running);
+        myGameArea.start();
+
+        for (let interval of carIntervals) clearInterval(interval);
+        carIntervals = [];
+
+        carLanes.forEach(lane => {
+            // Crea la prima macchina con posizione randomizzata
+            let firstCar = new Car({
+                ...lane,
+                x: lane.direction === 'right'
+                    ? -Math.random() * 300 // posizione random fuori dallo schermo
+                    : myGameArea.canvas.width + Math.random() * 300
+            });
+            activeCars.push(firstCar);
+
+            // Intervallo di generazione casuale
+            const intervalId = setInterval(() => {
+                // Trova tutte le macchine in questa corsia
+                const carsInLane = activeCars.filter(car => car.y === lane.y);
+
+                // Trova la macchina più vicina al punto di spawn
+                let canSpawn = true;
+                for (let car of carsInLane) {
+                    if (lane.direction === 'right') {
+                        if (car.x < 0 && Math.abs(car.x) < (car.width + 80)) {
+                            canSpawn = false;
+                            break;
+                        }
+                    } else {
+                        if (car.x > myGameArea.canvas.width && (car.x - myGameArea.canvas.width) < (car.width + 80)) {
+                            canSpawn = false;
+                            break;
                         }
                     }
-                }, lane.interval);
-                
-                carIntervals.push(intervalId);
-            });
-        }
-        
+                    // Controlla anche la distanza tra le macchine già in corsia
+                    for (let otherCar of carsInLane) {
+                        if (car !== otherCar && Math.abs(car.x - otherCar.x) < (car.width + 80)) {
+                            canSpawn = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (canSpawn && carsInLane.length < 3) {
+                    // Randomizza la posizione di spawn leggermente
+                    let spawnX = lane.direction === 'right'
+                        ? -lane.width - Math.random() * 100
+                        : myGameArea.canvas.width + Math.random() * 100;
+                    activeCars.push(new Car({ ...lane, x: spawnX }));
+                }
+
+                // Limita il numero totale di macchine attive
+                if (activeCars.length > 50) {
+                    const indexToRemove = activeCars.findIndex(car =>
+                        (car.direction === 'right' && car.x < -car.width) ||
+                        (car.direction === 'left' && car.x > myGameArea.canvas.width)
+                    );
+                    if (indexToRemove !== -1) {
+                        activeCars.splice(indexToRemove, 1);
+                    } else {
+                        activeCars.shift();
+                    }
+                }
+            }, lane.interval + Math.floor(Math.random() * 1200)); // intervallo randomizzato
+
+            carIntervals.push(intervalId);
+        });
+    }
+
         function showGameOver() {
             gameOver = true;
             document.getElementById('game-over').style.display = 'flex';
@@ -320,25 +337,29 @@
 
         // Control functions
         function moveup() {
-            myGamePiece.speedY = -2;
+            myGamePiece.y -= BLOCK_SIZE;
+            if (myGamePiece.y < 0) myGamePiece.y = 0;
         }
+
 
         function movedown() {
-            myGamePiece.speedY = 2;
-        }
+            myGamePiece.y += BLOCK_SIZE;
+            if (myGamePiece.y + myGamePiece.height > myGameArea.canvas.height)
+                myGamePiece.y = myGameArea.canvas.height - myGamePiece.height;
+}
 
         function moveleft() {
-            myGamePiece.speedX = -2;
-        }
+            myGamePiece.x -= BLOCK_SIZE;
+            if (myGamePiece.x < 0) myGamePiece.x = 0;
+}
 
         function moveright() {
-            myGamePiece.speedX = 2;
-        }
+            myGamePiece.x += BLOCK_SIZE;
+            if (myGamePiece.x + myGamePiece.width > myGameArea.canvas.width)
+                myGamePiece.x = myGameArea.canvas.width - myGamePiece.width;
+}
 
-        function clearmove() {
-            myGamePiece.speedX = 0;
-            myGamePiece.speedY = 0;
-        }
+        function clearmove() {}
 
 // Gestione pressione tasti per movimento
 document.addEventListener('keydown', function(event) {
