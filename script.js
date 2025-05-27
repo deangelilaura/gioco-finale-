@@ -62,26 +62,6 @@
                 }
                 this.image = this.imageList[this.actualFrame];
             },
-            
-            crashWith: function(otherobj) {
-                var myleft = this.tryX;
-                var myright = this.tryX + this.width;
-                var mytop = this.tryY;
-                var mybottom = this.tryY + this.height;
-                var otherleft = otherobj.x;
-                var otherright = otherobj.x + otherobj.width;
-                var othertop = otherobj.y;
-                var otherbottom = otherobj.y + otherobj.height;
-            
-                if ((mybottom >= othertop) &&
-                    (mytop <= otherbottom) &&
-                    (myright >= otherleft) &&
-                    (myleft <= otherright)) {
-                    return true; // Collisione
-                }
-            
-                return false; // Nessuna collisione
-            }
         };
         const BLOCK_SIZE = 40
         var myGameArea = {
@@ -356,7 +336,7 @@
         function moveright() {
             myGamePiece.x += BLOCK_SIZE;
             if (myGamePiece.x + myGamePiece.width > myGameArea.canvas.width)
-                myGamePiece.x = myGameArea.canvas.width - myGamePiece.width;
+                myGamePiece.x = myGameArea.canvas.width - myGamePiece.width;     
 }
 
         function clearmove() {}
